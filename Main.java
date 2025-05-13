@@ -1,32 +1,58 @@
 public class Main {
     public static void main(String[] args) {
-        Customer customer = new Customer("John Smith");
+        // --- Create Movies with Rental and Purchase Prices ---
+        Movie m1 = new Movie("Independence Day", new NewReleasePrice(), 19.99);
+        Movie m2 = new Movie("The Lion King", new ChildrensPrice(), 14.99);
+        Movie m3 = new Movie("The Godfather", new RegularPrice(), 9.99);
+        Movie m4 = new Movie("Oppenheimer", new NewReleasePrice(), 29.99); // New movie for purchase
 
-        // --- add some regular rentals ---
-        Movie m1 = new Movie("Independence Day", new NewReleasePrice());
-        Movie m2 = new Movie("The Lion King", new ChildrensPrice());
-        Movie m3 = new Movie("The Godfather", new RegularPrice());
+        // --- Create a Customer ---
+        Customer customer1 = new Customer("John Smith");
 
-        customer.addRental(new Rental(m1, 2));
-        customer.addRental(new Rental(m2, 4));
-        customer.addRental(new Rental(m3, 3));
+        // --- Transaction 1: Rentals and Purchases ---
+        System.out.println("--- Transaction for John Smith ---");
+        customer1.addRental(new Rental(m1, 2)); // Rent Independence Day (New Release)
+        customer1.addPurchase(new Purchase(m2)); // Buy The Lion King (Childrens)
+        customer1.addRental(new Rental(m3, 5)); // Rent The Godfather (Regular)
 
-        // --- give the customer two coupons ---
-        customer.addCoupon(new HalfOffCoupon()); // 50% off entire bill
-        customer.addCoupon(new TenDollarsOffCoupon()); // $10 off if > $50
+        // --- Give the customer coupons ---
+        customer1.addCoupon(new HalfOffCoupon()); // 50% off entire bill
+        customer1.addCoupon(new TenDollarsOffCoupon()); // $10 off if > $50 (applied after half-off)
 
-        // --- try redeeming a free movie (costs 10 points) ---
-        Movie freePick = new Movie("The Matrix", new NewReleasePrice());
-        boolean redeemed = customer.redeemFreeRental(freePick, 1);
+        // --- Try redeeming a free movie (costs 10 points) ---
+        // Let's say John wants to redeem "Oppenheimer"
+        boolean redeemed = customer1.redeemFreeRental(m4, 1); // Attempt to redeem m4
         if (redeemed) {
-            System.out.println("🎉 Redeemed a free rental for \"" + freePick.getTitle() + "\"\n");
+            System.out.println("🎉 Redeemed a free rental for \"" + m4.getTitle() + "\"\n");
         } else {
-            System.out.println("Not enough points to redeem a free movie.\n");
+            System.out.println("Not enough points to redeem \"" + m4.getTitle() + "\" for free, or other issue.\n");
         }
 
-        // --- print out statements ---
-        System.out.println(customer.getTextStatement());
-        System.out.println("\nXML Output:");
-        System.out.println(customer.getXmlStatement());
+        // --- Print out statements for customer1 ---
+        System.out.println(customer1.getTextStatement());
+        System.out.println("\nXML Output for John Smith:");
+        System.out.println(customer1.getXmlStatement());
+        System.out.println("\n---------------------------------------\n");
+
+        // --- Create another Customer for a different scenario ---
+        Customer customer2 = new Customer("Alice Wonderland");
+        System.out.println("--- Transaction for Alice Wonderland ---");
+        // Alice only purchases
+        customer2.addPurchase(new Purchase(m1)); // Buys Independence Day
+        customer2.addPurchase(new Purchase(m4)); // Buys Oppenheimer
+
+        // No coupons for Alice this time, let's see her points.
+        // Try to redeem The Godfather
+        boolean aliceRedeemed = customer2.redeemFreeRental(m3, 3);
+        if (aliceRedeemed) {
+            System.out.println("🎉 Alice redeemed a free rental for \"" + m3.getTitle() + "\"\n");
+        } else {
+            System.out.println(
+                    "Alice: Not enough points to redeem \"" + m3.getTitle() + "\" for free, or other issue.\n");
+        }
+
+        System.out.println(customer2.getTextStatement());
+        System.out.println("\nXML Output for Alice Wonderland:");
+        System.out.println(customer2.getXmlStatement());
     }
 }

@@ -1,69 +1,126 @@
 public class StatementFormatter {
-    public static String formatText(Customer customer) {
-        StringBuilder result = new StringBuilder("Rental Record for " + customer.getName() + "\n");
-        double totalAmount = 0;
-        int frequentRenterPoints = 0;
+        public static String formatText(Customer customer) {
+                StringBuilder result = new StringBuilder("Transaction Record for " + customer.getName() + "\n");
+                double totalAmount = 0;
+                // Points earned in this specific transaction (excluding already redeemed free
+                // items)
+                int frequentPointsEarnedThisTransaction = customer.getTotalFrequentPointsEarnedInTransaction();
 
-        for (Rental rental : customer.getRentals()) {
-            double thisAmount = rental.getCharge();
-            frequentRenterPoints += rental.getFrequentRenterPoints();
+                for (TransactionItem item : customer.getTransactionItems()) {
+                        double thisAmount = item.getCharge();
+                        // Points for this item were already summed in
+                        // getTotalFrequentPointsEarnedInTransaction if applicable
 
-            result.append("\t")
-                    .append(rental.getTitle())
-                    .append("\t")
-                    .append(thisAmount)
-                    .append("\n");
-            totalAmount += thisAmount;
+                        result.append("\t")
+                                        .append(item.getTitle())
+                                        .append(" (").append(item.getType()).append(")");
+                        if (item instanceof Rental) {
+                                Rental rental = (Rental) item;
+                                result.append(" for ").append(rental.getDaysRented()).append(" days");
+                                // Clarify if it's a free rental
+                                if (rental.getMovie().getRentalPriceStrategy() instanceof FreePrice) {
+                                        result.append(" - FREE");
+                                }
+                        }
+                        result.append("\t$")
+                                        .append(String.format("%.2f", thisAmount))
+                                        .append("\n");
+                        totalAmount += thisAmount;
+                }
+
+                double amountBeforeCoupons = totalAmount;
+                boolean couponsApplied = !customer.getCoupons().isEmpty();
+                String couponDetails = "";
+
+                for (Coupon coupon : customer.getCoupons()) {
+                        double amountAfterDiscount = coupon.applyDiscount(totalAmount);
+                        if (amountAfterDiscount < totalAmount) {
+                                if (coupon instanceof HalfOffCoupon)
+                                        couponDetails += "\tApplied 50% off coupon.\n";
+                                if (coupon instanceof TenDollarsOffCoupon)
+                                        couponDetails += "\tApplied $10 off coupon.\n";
+                        }
+                        totalAmount = amountAfterDiscount;
+                }
+
+                if (couponsApplied && !couponDetails.isEmpty()) {
+                        result.append("Subtotal: $").append(String.format("%.2f", amountBeforeCoupons)).append("\n");
+                        result.append(couponDetails);
+                }
+
+                result.append("Amount owed is $")
+                                .append(String.format("%.2f", totalAmount))
+                                .append("\n");
+                result.append("You earned ")
+                                .append(frequentPointsEarnedThisTransaction)
+                                .append(" frequent points in this transaction.\n");
+                result.append("Total points available for redemption: ")
+                                .append(customer.getFrequentPointsBalance());
+
+                return result.toString();
         }
 
-        for (Coupon coupon : customer.getCoupons()) {
-            totalAmount = coupon.applyDiscount(totalAmount);
+        public static String formatXML(Customer customer) {
+                StringBuilder xml = new StringBuilder("<customer>\n");
+                xml.append("\t<name>")
+                                .append(customer.getName())
+                                .append("</name>\n");
+
+                xml.append("\t<transactionItems>\n");
+                double totalChargeFromItems = 0;
+
+                for (TransactionItem item : customer.getTransactionItems()) {
+                        totalChargeFromItems += item.getCharge();
+                        xml.append("\t\t<item type=\"").append(item.getType()).append("\">\n")
+                                        .append("\t\t\t<movie>").append(item.getTitle()).append("</movie>\n");
+                        if (item instanceof Rental) {
+                                Rental rental = (Rental) item;
+                                xml.append("\t\t\t<daysRented>").append(rental.getDaysRented())
+                                                .append("</daysRented>\n");
+                                if (rental.getMovie().getRentalPriceStrategy() instanceof FreePrice) {
+                                        xml.append("\t\t\t<status>FREE_REDEMPTION</status>\n");
+                                }
+                        }
+                        xml.append("\t\t\t<charge>").append(String.format("%.2f", item.getCharge()))
+                                        .append("</charge>\n")
+                                        .append("\t\t\t<pointsEarnedForItem>")
+                                        .append(item.getMovie().getRentalPriceStrategy() instanceof FreePrice ? 0
+                                                        : item.getFrequentPoints())
+                                        .append("</pointsEarnedForItem>\n")
+                                        .append("\t\t</item>\n");
+                }
+                xml.append("\t</transactionItems>\n");
+
+                xml.append("\t<totalBeforeCoupons>").append(String.format("%.2f", totalChargeFromItems))
+                                .append("</totalBeforeCoupons>\n");
+
+                double totalAmountAfterCoupons = totalChargeFromItems;
+                if (!customer.getCoupons().isEmpty()) {
+                        xml.append("\t<couponsApplied>\n");
+                        for (Coupon coupon : customer.getCoupons()) {
+                                double tempAmount = totalAmountAfterCoupons;
+                                totalAmountAfterCoupons = coupon.applyDiscount(totalAmountAfterCoupons);
+                                if (totalAmountAfterCoupons < tempAmount) {
+                                        if (coupon instanceof HalfOffCoupon)
+                                                xml.append("\t\t<coupon type=\"HalfOff\" />\n");
+                                        if (coupon instanceof TenDollarsOffCoupon)
+                                                xml.append("\t\t<coupon type=\"TenDollarsOff\" />\n");
+                                }
+                        }
+                        xml.append("\t</couponsApplied>\n");
+                }
+
+                xml.append("\t<totalAfterCoupons>").append(String.format("%.2f", totalAmountAfterCoupons))
+                                .append("</totalAfterCoupons>\n");
+
+                xml.append("\t<frequentPointsEarnedThisTransaction>")
+                                .append(customer.getTotalFrequentPointsEarnedInTransaction())
+                                .append("</frequentPointsEarnedThisTransaction>\n");
+                xml.append("\t<totalPointsAvailable>")
+                                .append(customer.getFrequentPointsBalance())
+                                .append("</totalPointsAvailable>\n");
+
+                xml.append("</customer>");
+                return xml.toString();
         }
-
-        result.append("Amount owed is ")
-                .append(totalAmount)
-                .append("\n");
-        result.append("You earned ")
-                .append(frequentRenterPoints)
-                .append(" frequent renter points\n");
-        result.append("Points available for redemption: ")
-                .append(customer.getFrequentRenterPointsBalance());
-
-        return result.toString();
-    }
-
-    public static String formatXML(Customer customer) {
-        StringBuilder xml = new StringBuilder("<customer>\n");
-        xml.append("\t<name>")
-                .append(customer.getName())
-                .append("</name>\n");
-
-        for (Rental rental : customer.getRentals()) {
-            xml.append("\t<rental>\n")
-                    .append("\t\t<movie>").append(rental.getTitle()).append("</movie>\n")
-                    .append("\t\t<days>").append(rental.getDaysRented()).append("</days>\n")
-                    .append("\t\t<charge>").append(rental.getCharge()).append("</charge>\n")
-                    .append("\t</rental>\n");
-        }
-
-        double totalAmount = customer.getRentals().stream()
-                .mapToDouble(Rental::getCharge)
-                .sum();
-        xml.append("\t<totalBeforeCoupons>").append(totalAmount).append("</totalBeforeCoupons>\n");
-
-        for (Coupon coupon : customer.getCoupons()) {
-            totalAmount = coupon.applyDiscount(totalAmount);
-        }
-        xml.append("\t<totalAfterCoupons>").append(totalAmount).append("</totalAfterCoupons>\n");
-
-        xml.append("\t<frequentPointsEarned>")
-                .append(customer.getRentals().stream().mapToInt(Rental::getFrequentRenterPoints).sum())
-                .append("</frequentPointsEarned>\n");
-        xml.append("\t<pointsAvailable>")
-                .append(customer.getFrequentRenterPointsBalance())
-                .append("</pointsAvailable>\n");
-
-        xml.append("</customer>");
-        return xml.toString();
-    }
 }
