@@ -1,4 +1,4 @@
-public class Rental {
+public class Rental implements TransactionItem {
     private Movie movie;
     private int daysRented;
 
@@ -7,19 +7,32 @@ public class Rental {
         this.daysRented = daysRented;
     }
 
+    @Override
+    public Movie getMovie() {
+        return movie;
+    }
+
     public int getDaysRented() {
         return daysRented;
     }
 
+    @Override
     public String getTitle() {
         return movie.getTitle();
     }
 
+    @Override
     public double getCharge() {
-        return movie.getCharge(daysRented);
+        return movie.getRentalCharge(daysRented);
     }
 
-    public int getFrequentRenterPoints() {
-        return movie.getFrequentRenterPoints(daysRented);
+    @Override
+    public int getFrequentPoints() {
+        return movie.getFrequentRentalPoints(daysRented);
+    }
+
+    @Override
+    public String getType() {
+        return "Rental";
     }
 }
