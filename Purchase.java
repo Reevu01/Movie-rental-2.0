@@ -1,6 +1,5 @@
 public class Purchase implements TransactionItem {
     private Movie movie;
-    // No daysRented for a purchase
 
     public Purchase(Movie movie) {
         this.movie = movie;
@@ -25,6 +24,4 @@ public class Purchase implements TransactionItem {
         return movie.getFrequentPurchaserPoints();
     }
 
-    // If purchases can have different "types" affecting price/points later
-    // public Purchase(Movie movie, PurchaseType type) { ... }
 }

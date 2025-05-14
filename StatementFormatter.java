@@ -39,7 +39,6 @@ public class StatementFormatter {
                         double amountBeforeCoupon = totalAmount;
                         totalAmount = coupon.applyDiscount(totalAmount);
                         double discountApplied = amountBeforeCoupon - totalAmount;
-                        // It would be good if Coupon interface could describe the coupon
                         result.append("\tApplied a coupon. Discount: $")
                                         .append(String.format("%.2f", discountApplied))
                                         .append(". New Total: $").append(String.format("%.2f", totalAmount))
@@ -100,7 +99,6 @@ public class StatementFormatter {
                                 finalAmount = coupon.applyDiscount(finalAmount);
                                 double discount = amountBeforeCoupon - finalAmount;
                                 xml.append("\t\t<coupon>\n");
-                                // It would be better if coupon could provide its description
                                 xml.append("\t\t\t<description>").append(coupon.getClass().getSimpleName())
                                                 .append("</description>\n");
                                 xml.append("\t\t\t<discountAmount>").append(String.format("%.2f", discount))

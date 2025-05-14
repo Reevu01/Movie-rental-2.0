@@ -3,7 +3,7 @@ import java.util.List;
 
 public class Customer {
     private String name;
-    private List<TransactionItem> transactionItems = new ArrayList<>(); // Holds both Rentals and Purchases
+    private List<TransactionItem> transactionItems = new ArrayList<>();
     private List<Coupon> coupons = new ArrayList<>();
     private int redeemedPoints = 0;
 
@@ -24,10 +24,8 @@ public class Customer {
     }
 
     public boolean redeemFreeRental(Movie movie, int daysRented) {
-        if (getFrequentPointsBalance() >= 10) { // Assuming 10 points for a free rental
+        if (getFrequentPointsBalance() >= 10) {
             redeemedPoints += 10;
-            // Create a movie instance specifically for this free rental.
-            // It has a FreePrice for rental and no specified purchase price (null).
             Movie freeRentalMovie = new Movie(movie.getTitle(), new FreePrice(), null);
             transactionItems.add(new Rental(freeRentalMovie, daysRented));
             return true;
@@ -51,7 +49,6 @@ public class Customer {
         return transactionItems;
     }
 
-    // Specific getters if needed, though iterating transactionItems is more general
     public List<Rental> getRentals() {
         List<Rental> rentals = new ArrayList<>();
         for (TransactionItem item : transactionItems) {

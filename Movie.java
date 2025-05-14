@@ -64,7 +64,6 @@ public class Movie {
         this.rentalPrice = rentalPrice;
     }
 
-    // Convenience getters for strategies if needed by other parts of the system
     public Price getRentalPriceObject() {
         return rentalPrice;
     }
