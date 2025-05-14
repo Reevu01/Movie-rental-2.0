@@ -1,7 +1,7 @@
 public class TransactionItem {
     private Movie movie;
     private TransactionType type;
-    private int daysRented;  // meaningful only if type == RENTAL
+    private int daysRented; // meaningful only if type == RENTAL
 
     public TransactionItem(Movie movie, TransactionType type, int daysRented) {
         this.movie = movie;

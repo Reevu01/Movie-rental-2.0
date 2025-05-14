@@ -1,10 +1,17 @@
+// File: reevu01/movie-rental-2.0/Movie-rental-2.0-1/Main.java
 public class Main {
     public static void main(String[] args) {
         // --- Create Movies with Rental and Purchase Prices ---
-        Movie m1 = new Movie("Independence Day", new NewReleasePrice(), 19.99);
-        Movie m2 = new Movie("The Lion King", new ChildrensPrice(), 14.99);
-        Movie m3 = new Movie("The Godfather", new RegularPrice(), 9.99);
-        Movie m4 = new Movie("Oppenheimer", new NewReleasePrice(), 29.99); // New movie for purchase
+        // Updated Movie constructors to use appropriate Price and RenterPoint
+        // strategies for both rental and purchase
+        Movie m1 = new Movie("Independence Day", new NewReleasePrice(), new DefaultPurchasePrice(19.99),
+                new BonusRenterPointStrategy(), new DefaultPurchasePointStrategy());
+        Movie m2 = new Movie("The Lion King", new ChildrensPrice(), new DefaultPurchasePrice(14.99),
+                new DefaultRenterPointStrategy(), new DefaultPurchasePointStrategy());
+        Movie m3 = new Movie("The Godfather", new RegularPrice(), new DefaultPurchasePrice(9.99),
+                new DefaultRenterPointStrategy(), new DefaultPurchasePointStrategy());
+        Movie m4 = new Movie("Oppenheimer", new NewReleasePrice(), new DefaultPurchasePrice(29.99),
+                new BonusRenterPointStrategy(), new DefaultPurchasePointStrategy()); // New movie for purchase
 
         // --- Create a Customer ---
         Customer customer1 = new Customer("John Smith");
