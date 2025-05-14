@@ -6,8 +6,6 @@ public class Main {
 
         Movie m2 = new Movie("(The Lion King)", new ChildrensPrice(), new PurchasePrice(15.00, 3));
 
-        Movie m3 = new Movie("(The Godfather)", new RegularPrice(), null);
-
         Movie m4 = new Movie("(The Matrix) ", null, new PurchasePrice(20.00, 4));
 
         customer1.addRental(new Rental(m1, 3));
