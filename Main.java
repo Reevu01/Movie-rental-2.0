@@ -4,19 +4,19 @@ public class Main {
 
         // --- Define Movies with Rental and Purchase Prices ---
         // Movie 1: New Release, can be rented or purchased
-        Movie m1 = new Movie(" квантовый скачок (Quantum Leap) ", new NewReleasePrice(), new PurchasePrice(25.00, 5)); // title
-                                                                                                                       // in
-                                                                                                                       // Russian
+        Movie m1 = new Movie("(Quantum Leap) ", new NewReleasePrice(), new PurchasePrice(25.00, 5)); // title
+                                                                                                     // in
+                                                                                                     // Russian
         // Movie 2: Children's Movie, can be rented or purchased
-        Movie m2 = new Movie("Король Лев (The Lion King)", new ChildrensPrice(), new PurchasePrice(15.00, 3)); // title
-                                                                                                               // in
-                                                                                                               // Russian
+        Movie m2 = new Movie("(The Lion King)", new ChildrensPrice(), new PurchasePrice(15.00, 3)); // title
+                                                                                                    // in
+                                                                                                    // Russian
         // Movie 3: Regular Movie, can be rented (no purchase option for this one for
         // demo)
-        Movie m3 = new Movie("Крестный отец (The Godfather)", new RegularPrice(), null); // title in Russian
+        Movie m3 = new Movie("(The Godfather)", new RegularPrice(), null); // title in Russian
         // Movie 4: Another Movie, can be purchased (no rental option for this one for
         // demo)
-        Movie m4 = new Movie("Матрица (The Matrix) ", null, new PurchasePrice(20.00, 4)); // title in Russian
+        Movie m4 = new Movie("(The Matrix) ", null, new PurchasePrice(20.00, 4)); // title in Russian
 
         // --- Alice's Transactions ---
         // Alice rents "Quantum Leap" and "The Lion King"
@@ -48,9 +48,9 @@ public class Main {
 
         // --- Second Customer: Bob The Builder ---
         Customer customer2 = new Customer("Bob The Builder");
-        Movie m5_regular_rent_purchase = new Movie("Интерстеллар (Interstellar)", new RegularPrice(),
+        Movie m5_regular_rent_purchase = new Movie("(Interstellar)", new RegularPrice(),
                 new PurchasePrice(18.00, 3));
-        Movie m6_childrens_rent_only = new Movie("История игрушек (Toy Story)", new ChildrensPrice(), null);
+        Movie m6_childrens_rent_only = new Movie("(Toy Story)", new ChildrensPrice(), null);
 
         customer2.addRental(new Rental(m5_regular_rent_purchase, 2)); // Rent Interstellar
         customer2.addPurchase(new Purchase(m5_regular_rent_purchase)); // Buy Interstellar as well
@@ -70,7 +70,7 @@ public class Main {
         // points.
         // For now, the test will show if redemption fails if points are insufficient.
         System.out.println("Bob's points before trying to redeem: " + customer2.getFrequentPointsBalance());
-        Movie freePick = new Movie("Бегущий по лезвию (Blade Runner)", new RegularPrice(), null); // Movie to redeem
+        Movie freePick = new Movie("(Blade Runner)", new RegularPrice(), null); // Movie to redeem
         boolean redeemed = customer2.redeemFreeRental(freePick, 2); // Redeem for 2 days
         if (redeemed) {
             System.out.println("🎉 Bob redeemed a free rental for \"" + freePick.getTitle() + "\"\n");
